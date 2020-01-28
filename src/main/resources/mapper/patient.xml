@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.doctoranywhere.doctoranywhere.dao.PatientMapper">
+
+<select id="fetchAllPatient" resultMap="patientfetchAllMap">
+	SELECT P.ID patientId
+	,P.FIRST_NAME patientFirstName
+	,P.LAST_NAME patientLastName
+	,P.AGE patientAge
+	,P.SEX patientSex
+	,P.CONTACT_NUMBER patientContactNumber
+	,PA.ADDRESS_ID patientAddressId
+	,PA.ADDRESS_LINE_1 patientAddress1
+	,PA.ADDRESS_LINE_2 patientAddress2
+	,PA.CITY patientCity
+	,PA.COUNTRY patientCountry
+	FROM PATIENT P
+	LEFT JOIN PATIENT_ADDRESS PA ON PA.ID=P.ID
+</select>
+
+<select id="fetchMultiplePatientAddress" parameterType="Patient" resultType="PatientAddress">
+	SELECT PA.ID patientId
+	,PA.ADDRESS_ID patientAddressId
+	,PA.ADDRESS_LINE_1 patientAddress1
+	,PA.ADDRESS_LINE_2 patientAddress2
+	,PA.CITY patientCity
+	,PA.COUNTRY patientCountry
+	FROM PATIENT_ADDRESS PA
+	WHERE PA.ID = #{patientId}
+</select>
+
+<delete id="deletePatient" parameterType="Patient">
+	delete from PATIENT where ID = #{patientId}
+</delete>
+
+<insert id="createPatient" parameterType="Patient">
+	insert into PATIENT (ID,FIRST_NAME,LAST_NAME,AGE,SEX,CONTACT_NUMBER) values(#{patientId},#{patientFirstName},#{patientLastName},#{patientAge},#{patientSex},#{patientContactNumber})
+</insert>
+
+<insert id="createPatientAddress" parameterType="PatientAddress">
+	insert into PATIENT_ADDRESS (ID,ADDRESS_ID,ADDRESS_LINE_1,ADDRESS_LINE_2,CITY,COUNTRY) values(#{patientId},#{patientAddressId},#{patientAddress1},#{patientAddress2},#{patientCity},#{patientCountry})
+</insert>
+
+<update id="editPatient" parameterType="Patient">
+	update PATIENT 
+	set FIRST_NAME=#{patientFirstName}
+	,LAST_NAME=#{patientLastName}
+	,AGE=#{patientAge}
+	,SEX=#{patientSex}
+	,CONTACT_NUMBER=#{patientContactNumber}
+	where ID=#{patientId}
+</update>
+
+<update id="editPatientAddress" parameterType="PatientAddress">
+	update PATIENT_ADDRESS 
+	set ADDRESS_LINE_1=#{patientAddress1}
+	,ADDRESS_LINE_2=#{patientAddress2}
+	,CITY=#{patientCity}
+	,COUNTRY=#{patientCountry}
+	where ADDRESS_ID=#{patientAddressId}
+</update>
+
+<delete id="deletePatientAddress" parameterType="PatientAddress">
+	delete from PATIENT_ADDRESS where ADDRESS_ID=#{patientAddressId}
+</delete>
+<resultMap type="Patient" id="patientfetchAllMap">
+ 	<id column="patientId" property="patientId"></id>
+    <result column="patientFirstName" property="patientFirstName"></result>
+    <result column="patientLastName" property="patientLastName"></result>
+    <result column="patientAge" property="patientAge"></result>
+    <result column="patientSex" property="patientSex"></result>
+    <result column="patientContactNumber" property="patientContactNumber"></result>
+    <collection property="patientAddress" ofType="com.doctoranywhere.doctoranywhere.dto.PatientAddress">
+    	<id column="patientAddressId" property="patientAddressId"></id>
+    	<result column="patientId" property="patientId"></result>
+    	<result column="patientAddress1" property="patientAddress1"></result>
+    	<result column="patientAddress2" property="patientAddress2"></result>
+    	<result column="patientCity" property="patientCity"></result>
+    	<result column="patientCountry" property="patientCountry"></result>
+    </collection>
+</resultMap>
+</mapper>
